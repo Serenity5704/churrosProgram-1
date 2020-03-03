@@ -62,7 +62,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    drive.arcadeDrive(j.getX(), j.getY());
+    drive.arcadeDrive(j.getX()*-1, j.getY());
     
     jsbAdapter.update();
   }
