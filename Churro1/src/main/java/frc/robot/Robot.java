@@ -7,10 +7,12 @@
 
 package frc.robot;
 
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import frc.robot.buttons.JSBAdapter;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -20,13 +22,19 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
  * project.
  */
 public class Robot extends TimedRobot {
+  private static Robot instance;
 
-  Spark fr=new Spark(0);
-  Spark br=new Spark(1);
-  Spark bl=new Spark(2);
-  Spark fl=new Spark(3);
+  private Spark fr=new Spark(0);
+  private Spark br=new Spark(1);
+  private Spark bl=new Spark(2);
+  private Spark fl=new Spark(3);
+  private Spark arm=new Spark(6);
+  private Spark iotake=new Spark(5);
+  private Spark climber=new Spark(4);
 
   Joystick j=new Joystick(0);
+
+  JSBAdapter jsbAdapter=new JSBAdapter(j);
 
   DifferentialDrive drive;
 
@@ -37,6 +45,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     drive=new DifferentialDrive(fl, fr);
+    instance=this;
   }
 
   @Override
@@ -54,8 +63,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     drive.arcadeDrive(j.getY(), j.getX());
-    br.set(fr.get());
-    bl.set(fl.get());
+    
+    jsbAdapter.update();
   }
 
   @Override
@@ -66,4 +75,15 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
   }
 
+  public static Robot getInstance(){
+    return instance;
+  }
+
+  public Spark getIOtake(){
+    return iotake;
+  }
+
+  public Spark getArm(){
+    return arm;
+  }
 }
