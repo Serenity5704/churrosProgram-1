@@ -1,18 +1,13 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
 
 package frc.robot;
-
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.buttons.JSBAdapter;
+import frc.robot.event.EventHandler;
+import frc.robot.event.customevents.sequence.AutonEvent;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -22,8 +17,13 @@ import frc.robot.buttons.JSBAdapter;
  * project.
  */
 public class Robot extends TimedRobot {
+  //declare instance class variable
   private static Robot instance;
 
+  //initialize event handler (runs on it's own thread)
+  public static EventHandler eHandler=new EventHandler();
+
+  //initialize motors
   private Spark fr=new Spark(0);
   private Spark br=new Spark(1);
   private Spark bl=new Spark(2);
@@ -32,10 +32,13 @@ public class Robot extends TimedRobot {
   private Spark iotake=new Spark(5);
   private Spark climber=new Spark(4);
 
+  //initialize joystick
   Joystick j=new Joystick(0);
 
+  //initialize button adapter
   JSBAdapter jsbAdapter=new JSBAdapter(j);
 
+  //declare differential drive
   DifferentialDrive drive;
 
   /**
@@ -44,22 +47,39 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    drive=new DifferentialDrive(fl, fr);
+    //set the instance class variable to be equal to this instance so that this instance may be accessed in a static way
     instance=this;
+    //start the event handler thread
+    eHandler.start();
   }
 
+  /**Called when auton starts
+   * 
+   */
   @Override
   public void autonomousInit() {
+    //set differential drive to null so that it doesn't interfear with autonomous drive processes
+    drive=null;
+    //run the autonomous event sequence (look in AutonEvent.java for details)
+    eHandler.triggerEvent(new AutonEvent());
   }
 
   @Override
   public void autonomousPeriodic() {
   }
 
+  /**Called at beginning of teleop
+   * 
+   */
   @Override
   public void teleopInit() {
+    //initialize differential drive
+    drive=new DifferentialDrive(fl, fr);
   }
 
+  /**Called periodically during teleop
+   * 
+   */
   @Override
   public void teleopPeriodic() {
     drive.arcadeDrive(j.getX()*-1, j.getY());
@@ -75,9 +95,17 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
   }
 
+  /**Returns the current instance of the robot so that all methods and visible properties are effectively able to be statically accessed from anywhere
+   * 
+   * @return
+   */
   public static Robot getInstance(){
     return instance;
   }
+
+  //----------------------
+  //Motor access functions
+  //----------------------
 
   public Spark getIOtake(){
     return iotake;
@@ -86,4 +114,18 @@ public class Robot extends TimedRobot {
   public Spark getArm(){
     return arm;
   }
+
+  public Spark getFrontDriveLeft(){
+    return fl;
+  }
+  public Spark getFrontDriveRight(){
+    return br;
+  }
+  public Spark getBackDriveLeft(){
+    return bl;
+  }
+  public Spark getBackDriveRight(){
+    return br;
+  }
+
 }
