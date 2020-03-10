@@ -1,14 +1,10 @@
 package frc.robot.buttons;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+
+import java.util.function.BiConsumer;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.buttons.*;
-import frc.robot.Robot;
 /**
  * Handles button presses without commands (specify actions in an extended class)
  */
@@ -16,6 +12,17 @@ public abstract class ButtonHandler /*extends Thread*/{
     private boolean enabled;
     private GenericHID buttonInterface;
     private int buttonNo;
+    protected static final int POV_UP=0;
+    protected static final int POV_RIGHT=90;
+    protected static final int POV_DOWN=180;
+    protected static final int POV_LEFT=270;
+    protected static final int POV_UP_RIGHT=45;
+    protected static final int POV_DOWN_RIGHT=135;
+    protected static final int POV_DOWN_LEFT=225;
+    protected static final int POV_UP_LEFT=315;
+
+    private int POVDeadband=1;
+
     /**Initializes a button handler with specified numberof buttons
      * 
      * @param buttonInterface
@@ -55,7 +62,7 @@ public abstract class ButtonHandler /*extends Thread*/{
                 buttonReleased(i);
             }
         }
-        
+        POV(buttonInterface.getPOV());
     }
     
     public final boolean getButtonDown(int no){
@@ -100,5 +107,38 @@ public abstract class ButtonHandler /*extends Thread*/{
     }
     public void disable(){
         enabled=false;
+    }
+
+    /**Called on update with current value of POV as argument
+     * 
+     */
+    public void POV(int angle){
+    }
+
+    /**Uses preset deadband (default value is 1) to determine if POV is at angle
+     * 
+     * @param angle
+     * @return
+     */
+    public boolean POVAt(int angle){
+        return buttonInterface.getPOV()>angle-POVDeadband && buttonInterface.getPOV()<angle+POVDeadband;
+    }
+
+    /**Uses specified deadband to determine if POV is at angle
+     * 
+     * @param angle
+     * @param deadband
+     * @return
+     */
+    public boolean POVAt(int angle,int deadband){
+        return buttonInterface.getPOV()>angle-deadband && buttonInterface.getPOV()<angle+deadband;
+    }
+
+    /**Sets the deadband to be used in POVAt function when unspecified (default value is one)
+     * 
+     * @param deadband
+     */
+    public void setPOVDeadband(int deadband){
+        POVDeadband=deadband;
     }
 }
