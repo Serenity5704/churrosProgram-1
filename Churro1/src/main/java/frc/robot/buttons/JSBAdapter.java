@@ -27,6 +27,12 @@ public class JSBAdapter extends ButtonHandler {
             case 4:
                 Robot.getInstance().getArm().set(-.5);
             break;
+            case 5:
+                Robot.getInstance().getClimber().set(.4);
+            break;
+            case 6:
+                Robot.getInstance().getClimber().set(-.4);
+            break;
         }
 
     }
@@ -47,6 +53,12 @@ public class JSBAdapter extends ButtonHandler {
             break;
             case 4:
                 Robot.getInstance().getArm().set(0);
+            break;
+            case 5:
+                Robot.getInstance().getClimber().set(0);
+            break;
+            case 6:
+                Robot.getInstance().getClimber().set(0);
             break;
         }
 

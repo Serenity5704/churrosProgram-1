@@ -42,9 +42,10 @@ public class Robot extends TimedRobot {
   DifferentialDrive drive;
 
   /**
-   * This function is run when the robot is first started up and should be used
+   * This function is run when the robot is 
+   *first started up and should be used
    * for any initialization code.
-   */
+   */if(timer.getmatchTime() > 12){
   @Override
   public void robotInit() {
     //set the instance class variable to be equal to this instance so that this instance may be accessed in a static way
@@ -82,9 +83,22 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    drive.arcadeDrive(j.getX()*-1, j.getY());
+    double x=j.getX();
+    if (Math.abs(x)<.17){
+      x=0;
+    }
+    drive.arcadeDrive(x*-1, j.getY());
     
     jsbAdapter.update();
+
+    // climber
+    if (j.getPOV() == 0) {
+      climber.set(0.3);
+    } else if (j.getPOV()==180){
+      climber.set(-0.3);
+    } else {
+      climber.set(0);
+    }
   }
 
   @Override
@@ -126,6 +140,9 @@ public class Robot extends TimedRobot {
   }
   public Spark getBackDriveRight(){
     return br;
+  }
+  public Spark getClimber(){
+    return climber;
   }
 
 }
